@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
 	"os"
 	"time"
 	// "math"
 	"image/color"
 
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
+	"github.com/jstewart7/glitch"
+	"github.com/jstewart7/glitch/shaders"
 
 	"github.com/ungerik/go3d/float64/vec2"
 
@@ -25,32 +26,34 @@ func check(err error) {
 }
 
 func main() {
-	pixelgl.Run(runGame)
+	glitch.Run(runGame)
 }
 
 func runGame() {
-	cfg := pixelgl.WindowConfig{
-		Title: "Particles",
-		Bounds: pixel.R(0, 0, 1920, 1080),
-		VSync: true,
-		Resizable: true,
-		Maximized: true,
-		Monitor: pixelgl.PrimaryMonitor(),
-	}
+	win, err := glitch.NewWindow(1920, 1080, "Particles", glitch.WindowConfig{
+		Vsync: true,
+	})
 
-	win, err := pixelgl.NewWindow(cfg)
 	check(err)
-	win.SetSmooth(false)
+	// win.SetSmooth(false)
 
 	// center := win.Bounds().Center()
 
 	world := ecs.NewWorld()
-	camera := render.NewCamera(win, 0, 0)
+	// camera := render.NewCamera(win, 0, 0)
+	// camera.Update()
+	// log.Println(camera)
+	// log.Println(camera.Camera)
+	camera := glitch.NewCameraOrtho()
+	camera.SetOrtho2D(win)
+	camera.SetView2D(0, 0, 1.0, 1.0)
+
 
 	load := asset.NewLoad(os.DirFS("./"))
 	particleSprite, err := load.Sprite("square.png")
 	check(err)
-
+	log.Println(*particleSprite)
+	// log.Println(particleSprite.Texture)
 	// lightBlue := color.NRGBA{0x8a, 0xeb, 0xf1, 0xff}
 	// pink := color.NRGBA{0xcd, 0x60, 0x93, 0xff}
 	// particlePrefab := ecs.BlankEntity()
@@ -125,8 +128,13 @@ func runGame() {
 		},
 	}
 
+	shader, err := glitch.NewShader(shaders.SpriteShader)
+	if err != nil { panic(err) }
+
+	pass := glitch.NewRenderPass(shader)
+
 	dt := 15 * time.Millisecond
-	for !win.Pressed(pixelgl.KeyBackspace) {
+	for !win.Pressed(glitch.KeyBackspace) {
 		{
 			taggedForDelete := ecs.TaggedWith(world, "delete")
 			for _,id := range taggedForDelete {
@@ -142,9 +150,19 @@ func runGame() {
 		render.InterpolateParticles(world, dt)
 
 		// Draw
-		win.Clear(pixel.RGB(0, 0, 0))
-		win.SetMatrix(camera.Mat())
-		render.DrawSprites(win, world)
+		// win.Clear(pixel.RGB(0, 0, 0))
+		// win.SetMatrix(camera.Mat())
+		pass.Clear()
+
+		render.DrawSprites(pass, world)
+
+		glitch.Clear(glitch.RGBA{0, 0, 0, 1.0})
+		camera.SetOrtho2D(win)
+		camera.SetView2D(0, 0, 1.0, 1.0)
+		pass.SetUniform("projection", camera.Projection)
+		pass.SetUniform("view", camera.View)
+		pass.Draw(win)
+
 		win.Update()
 	}
 }
