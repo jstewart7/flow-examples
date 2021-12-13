@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"time"
 	// "math"
@@ -40,19 +39,19 @@ func runGame() {
 	// center := win.Bounds().Center()
 
 	world := ecs.NewWorld()
-	// camera := render.NewCamera(win, 0, 0)
-	// camera.Update()
+	camera := render.NewCamera(win, 0, 0)
+	camera.Update()
 	// log.Println(camera)
 	// log.Println(camera.Camera)
-	camera := glitch.NewCameraOrtho()
-	camera.SetOrtho2D(win)
-	camera.SetView2D(0, 0, 1.0, 1.0)
+	// camera := glitch.NewCameraOrtho()
+	// camera.SetOrtho2D(win)
+	// camera.SetView2D(0, 0, 1.0, 1.0)
 
 
 	load := asset.NewLoad(os.DirFS("./"))
 	particleSprite, err := load.Sprite("square.png")
 	check(err)
-	log.Println(*particleSprite)
+
 	// log.Println(particleSprite.Texture)
 	// lightBlue := color.NRGBA{0x8a, 0xeb, 0xf1, 0xff}
 	// pink := color.NRGBA{0xcd, 0x60, 0x93, 0xff}
@@ -157,10 +156,11 @@ func runGame() {
 		render.DrawSprites(pass, world)
 
 		glitch.Clear(glitch.RGBA{0, 0, 0, 1.0})
-		camera.SetOrtho2D(win)
-		camera.SetView2D(0, 0, 1.0, 1.0)
-		pass.SetUniform("projection", camera.Projection)
-		pass.SetUniform("view", camera.View)
+		// camera.SetOrtho2D(win)
+		// camera.SetView2D(0, 0, 1.0, 1.0)
+		camera.Update()
+		pass.SetUniform("projection", camera.Camera.Projection)
+		pass.SetUniform("view", camera.Camera.View)
 		pass.Draw(win)
 
 		win.Update()
