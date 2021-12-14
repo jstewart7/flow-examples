@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/jstewart7/ecs"
-	"github.com/jstewart7/flow/render"
-	"github.com/jstewart7/flow/physics"
-	"github.com/jstewart7/flow/particle"
+	"github.com/unitoftime/ecs"
+	"github.com/unitoftime/flow/render"
+	"github.com/unitoftime/flow/physics"
+	"github.com/unitoftime/flow/particle"
 )
 
 func init() {
