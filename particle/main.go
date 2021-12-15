@@ -41,12 +41,6 @@ func runGame() {
 	world := ecs.NewWorld()
 	camera := render.NewCamera(win, 0, 0)
 	camera.Update()
-	// log.Println(camera)
-	// log.Println(camera.Camera)
-	// camera := glitch.NewCameraOrtho()
-	// camera.SetOrtho2D(win)
-	// camera.SetView2D(0, 0, 1.0, 1.0)
-
 
 	load := asset.NewLoad(os.DirFS("./"))
 	particleSprite, err := load.Sprite("square.png")
@@ -149,15 +143,14 @@ func runGame() {
 		render.InterpolateParticles(world, dt)
 
 		// Draw
-		// win.Clear(pixel.RGB(0, 0, 0))
-		// win.SetMatrix(camera.Mat())
 		pass.Clear()
 
 		render.DrawSprites(pass, world)
 
 		glitch.Clear(glitch.RGBA{0, 0, 0, 1.0})
-		// camera.SetOrtho2D(win)
-		// camera.SetView2D(0, 0, 1.0, 1.0)
+
+		winBounds := win.Bounds()
+		camera.Position = glitch.Vec2{winBounds.W()/2, winBounds.H()/2}
 		camera.Update()
 		pass.SetUniform("projection", camera.Camera.Projection)
 		pass.SetUniform("view", camera.Camera.View)
