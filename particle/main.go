@@ -99,11 +99,11 @@ func runGame() {
 
 	lightBlue := color.NRGBA{0x8a, 0xeb, 0xf1, 0xff}
 	pink := color.NRGBA{0xcd, 0x60, 0x93, 0xff}
-	particlePrefab := ecs.BlankEntity()
-	particlePrefab["render.Sprite"] = render.NewSprite(particleSprite)
-	particlePrefab["particle.Lifetime"] = particle.NewLifetime(10 * time.Second)
-	particlePrefab["particle.Color"] = particle.NewColor(interp.Linear, lightBlue, pink)
-	particlePrefab["particle.Size"] = particle.NewSize(interp.Linear, vec2.T{5, 5}, vec2.T{1, 1})
+	particlePrefab := ecs.NewEntity()
+	particlePrefab.Add(ecs.C(render.NewSprite(particleSprite)))
+	particlePrefab.Add(ecs.C(particle.NewLifetime(10 * time.Second)))
+	particlePrefab.Add(ecs.C(particle.NewColor(interp.Linear, lightBlue, pink)))
+	particlePrefab.Add(ecs.C(particle.NewSize(interp.Linear, vec2.T{5, 5}, vec2.T{1, 1})))
 	emitter := particle.Emitter{
 		Max: 100,
 		Rate: 0.5,
@@ -128,12 +128,12 @@ func runGame() {
 
 	dt := 15 * time.Millisecond
 	for !win.Pressed(glitch.KeyBackspace) {
-		{
-			taggedForDelete := ecs.TaggedWith(world, "delete")
-			for _,id := range taggedForDelete {
-				ecs.Delete(world, id)
-			}
-		}
+		// {
+		// 	taggedForDelete := ecs.TaggedWith(world, "delete")
+		// 	for _,id := range taggedForDelete {
+		// 		ecs.Delete(world, id)
+		// 	}
+		// }
 
 		// emitter.Update(world, vec2.T{center.X, center.Y}, dt)
 		emitter.Update(world, vec2.T{0,0}, dt)
