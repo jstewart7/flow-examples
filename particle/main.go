@@ -108,7 +108,7 @@ func runGame() {
 		Max: 100,
 		Rate: 0.5,
 		Loop: true,
-		Probability: 1.0,
+		Probability: 0.1,
 		Prefab: particlePrefab,
 		Builders: []particle.PrefabBuilder{
 			&particle.TransformBuilder{
